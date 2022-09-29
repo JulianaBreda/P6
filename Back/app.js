@@ -1,8 +1,7 @@
 const express = require('express');
-
-const app = express();
-
+const app = express(); //creates a new express instance - express object cria rotas
 const mongoose = require('mongoose'); //import mongoose to the app file
+const User = require('./models/user.js'); //import models/user to the app.js
 
 //connect P6 to the data base mongooseATlas
 mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongodb.net/?retryWrites=true&w=majority',
@@ -21,6 +20,17 @@ app.use((req, res, next) => { //global middleware - CORS - allows crossorigin ex
   next();
 });
 
+app.use(bodyParser.json());
+
+app.post('/api/auth/signup', (req, res, next) => { //send the new model 'user' to the data base
+    delete req.body._id;
+    const user = new User({
+      ...req.body
+    });
+    user.save()
+      .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+      .catch(error => res.status(400).json({ error }));
+  });
 
 app.use((req, res, next) => {
     console.log('Requête reçue !');
