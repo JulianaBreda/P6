@@ -1,7 +1,7 @@
-const express = require('express');
-const app = express(); //creates a new express instance - express object cria rotas
+const express = require('express'); 
+const app = express(); //creates a new express instance - express object creates routes to be used
 const mongoose = require('mongoose'); //import mongoose to the app file
-const User = require('./models/user.js'); //import models/user to the app.js
+const User = require('./models/user'); //import models/user to the app.js *************
 
 //connect P6 to the data base mongooseATlas
 mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongodb.net/?retryWrites=true&w=majority',
@@ -11,7 +11,7 @@ mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongo
 .catch(() => console.log('Connexion à MongoDB échouée !'));
   
 
-app.use(express.json());//read info return POST
+app.use(express.json());//Read info return as POST
 
 app.use((req, res, next) => { //global middleware - CORS - allows crossorigin exchange 
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,16 +20,31 @@ app.use((req, res, next) => { //global middleware - CORS - allows crossorigin ex
   next();
 });
 
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
-app.post('/api/auth/signup', (req, res, next) => { //send the new model 'user' to the data base
-    delete req.body._id;
-    const user = new User({
+app.post('/api/auth/signup', (req, res, next) => { //Save the new model 'user' to the data base MongoDB
+    delete req.body._id; // exclude the field ID to the collection saved to the date base Mongo DB
+    const user = new User({ //creates new user
       ...req.body
     });
     user.save()
       .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
       .catch(error => res.status(400).json({ error }));
+  });
+
+  /*app.use('/api/auth/signup', (req, res, next) => { //Save model to the data base
+    User.find()
+      .then(users => res.status(200).json(users))
+      .catch(error => res.status(400).json({ error }));
+  });*/
+
+  app.post('/api/auth/login', (req, res, next) => { //Save the new model 'user' to the data base MongoDB
+    delete req.body._id; // exclude the field ID to the collection saved to the date base Mongo DB
+    
+    User.findOne({ email: req.params.email })
+    .then(user => res.status(200).json(user))
+    .catch(error => res.status(404).json({ error }));
+
   });
 
 app.use((req, res, next) => {
