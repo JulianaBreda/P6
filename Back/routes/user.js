@@ -1,11 +1,12 @@
 const express = require('express');
+const auth = require('auth');
 const router = express.Router();
 
 const userCtrl = require('../controllers/user') //AQUI NAO TENHO CERTEZA SE EH USER OU AUTH
 
-router.post('/signup', userCtrl.signup);
+router.post('/signup', auth, userCtrl.signup);
 
-router.post('/login', userCtrl.login);
+router.post('/login', auth, userCtrl.login);
 
 
 /*// Allows the user to add the sauce to the API // ROUTE SAUCE

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.signup = (req, res, next) => { //Save the new model 'user' to the data base MongoDB
@@ -15,7 +16,8 @@ exports.signup = (req, res, next) => { //Save the new model 'user' to the data b
 
   .catch(error => res.status(500).json({error}));
 };
-     
+  
+   
     
 exports.login = (req, res, next) => { //checks the data base MongoDB to find the user
   User.findOne({ email: req.body.email })
@@ -30,7 +32,11 @@ exports.login = (req, res, next) => { //checks the data base MongoDB to find the
                       }
               res.status(200).json({
                   userId: user._id,
-                  token: 'TOKEN'
+                  token: jwt.sign(
+                    { userId: user._id },
+                    'RADOM_TOKEN_SECRET',
+                    { expiresIn: '24h'}
+                  )
               });
             })
             .catch(error => res.status(500).json({ error }));
