@@ -2,7 +2,7 @@ const express = require('express');
 const app = express(); //creates a new express instance - express object creates routes to be used
 const mongoose = require('mongoose'); //import mongoose to the app file
 
-const authRoutes = require('./routes/auth')
+const userRoutes = require('./routes/user')
 
 //connect P6 to the data base mongooseATlas
 mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongodb.net/?retryWrites=true&w=majority',
@@ -21,7 +21,8 @@ app.use((req, res, next) => { //global middleware - CORS - allows crossorigin ex
   next();
 });
 
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', userRoutes);
+
 module.exports = app;
