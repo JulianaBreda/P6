@@ -3,6 +3,7 @@ const app = express(); //creates a new express instance - express object creates
 const mongoose = require('mongoose'); //import mongoose to the app file
 
 const userRoutes = require('./routes/user')
+const saucesRoutes = require('/routes/sauces')
 
 //connect P6 to the data base mongooseATlas
 mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongodb.net/?retryWrites=true&w=majority',
@@ -21,8 +22,9 @@ app.use((req, res, next) => { //global middleware - CORS - allows crossorigin ex
   next();
 });
 
-//app.use(bodyParser.json());
+app.use(bodyParser.json());
 
 app.use('/api/auth', userRoutes);
+app.use('/api/sauces', saucesRoutes);
 
 module.exports = app;
