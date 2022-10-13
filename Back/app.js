@@ -1,9 +1,10 @@
 const express = require('express'); 
 const app = express(); //creates a new express instance - express object creates routes to be used
 const mongoose = require('mongoose'); //import mongoose to the app file
+//const path = require('path'); NAO TENHO CERTEZA SE ESSA VARIAVEL EH AQUI ???????
 
 const userRoutes = require('./routes/user')
-const saucesRoutes = require('/routes/sauces')
+//const saucesRoutes = require('./routes/sauces')
 
 //connect P6 to the data base mongooseATlas
 mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongodb.net/?retryWrites=true&w=majority',
@@ -22,9 +23,10 @@ app.use((req, res, next) => { //global middleware - CORS - allows crossorigin ex
   next();
 });
 
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
 app.use('/api/auth', userRoutes);
 app.use('/api/sauces', saucesRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;

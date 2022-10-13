@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.signup = (req, res, next) => { //Save the new model 'user' to the data base MongoDB
-  bcrypt.hash  (req.body.passwod, 10)
+  bcrypt.hash  (req.body.password, 10)
   .then(hash => {
     const user = new User({ //creates new user
       email: req.body.email,
