@@ -3,10 +3,10 @@ const fs = require('fs');
 
 //POST - creates new sauces
 exports.createSauces = (req, res, next) => { //ESSE DJANHO QUE EU TENHO Q MODIFICAR PRA ACEITAR MULTER, MAS ACHO Q NAO EH AQUI, EH SO NAS ROTAS
-    const saucesObject = JSON.parse(req.body.thing);
+    const saucesObject = JSON.parse(req.body.sauces);
     delete saucesObject._id;
-    delete aaucesObject._userId;
-    const aauces = new Sauces({
+    delete saucesObject._userId;
+    const sauces = new Sauces({
         ...SaucesObject,
         userId: req.auth.userId,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`

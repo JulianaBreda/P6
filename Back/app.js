@@ -1,10 +1,10 @@
 const express = require('express'); 
 const app = express(); //creates a new express instance - express object creates routes to be used
 const mongoose = require('mongoose'); //import mongoose to the app file
-//const path = require('path'); NAO TENHO CERTEZA SE ESSA VARIAVEL EH AQUI ???????
+const path = require('path');
 
 const userRoutes = require('./routes/user')
-//const saucesRoutes = require('./routes/sauces')
+const saucesRoutes = require('./routes/sauces')
 
 //connect P6 to the data base mongooseATlas
 mongoose.connect('mongodb+srv://julianabreda:Bidoncho1220@cluster0.yehlfob.mongodb.net/?retryWrites=true&w=majority',
