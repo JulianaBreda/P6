@@ -1,10 +1,23 @@
 const Sauces = require('../models/Sauces');
 const fs = require('fs');
 
+
+//GET - get all the souces from the data base
+exports.allSauces = (req, res, next) => {
+    sauces.find().then(
+        (sauces) => {
+            res.status(200).json(sauces);
+        }
+    ).catch((error) => {
+        res.status(400).json({ error: error });
+    }   
+};
+
+
 //POST - creates new sauces
 exports.createSauces = (req, res, next) => { //ESSE DJANHO QUE EU TENHO Q MODIFICAR PRA ACEITAR MULTER, MAS ACHO Q NAO EH AQUI, EH SO NAS ROTAS
   console.log(req.body)  
-  const saucesObject = JSON.parse(req.body.sauces);
+  const saucesObject = JSON.parse(req.body.sauce);
     delete saucesObject._id;
     delete saucesObject._userId;
     const sauces = new Sauces({
