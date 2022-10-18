@@ -5,9 +5,9 @@ const multer = require('../middleware/multer-config');
 const saucesCtrl = require('../controllers/sauces');
 
 
-//router.get('/', auth, saucesCtrl.getAllSauces);
+router.get('/', auth, saucesCtrl.getAllSauces);
 
-//router.get('/:id', auth, saucesCtrl.getOneSauces);
+router.get('/:id', auth, saucesCtrl.getOneSauces);
 
 router.post('/', auth, multer, saucesCtrl.createSauces); //AQUI TENHO Q MODIFICAR PRA ACEITAR O MULTER
 
