@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const bcrypt = require('bcrypt'); //import the variable that manage the password hash
+const jwt = require('jsonwebtoken'); //import jwt variable that manage the token
+const User = require('../models/User'); //Import User variable from models
 
 exports.signup = (req, res, next) => { //Save the new model 'user' to the data base MongoDB
   bcrypt.hash  (req.body.password, 10)

@@ -19,7 +19,7 @@ exports.getOneSauces = (req, res, next) => {
     sauces.findOne({
       _id: req.params.id
     }).then(
-      (sauce) => {
+      (sauces) => {
         res.status(200).json(sauces);
       }
     ).catch(
@@ -48,18 +48,19 @@ exports.createSauces = (req, res, next) => { //ESSE DJANHO QUE EU TENHO Q MODIFI
 
 //PUT
 exports.modifySauces = (req, res, next) => {
-  const saucesObject = req.file ? {
-      ...JSON.parse(req.body.sauces),
+  const saucesObject = req.file ? { //if it finds a file uploaded by the user
+      ...JSON.parse(req.body.sauce),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   } : { ...req.body };
 
   delete saucesObject._userId;
   sauces.findOne({_id: req.params.id})
-      .then((sauces) => {
-          if (sauces.userId != req.auth.userId) {
+      .then((saucesData) => {
+          if (saucesData.userId != req.auth.userId) {
               res.status(401).json({ message : 'Not authorized'});
           } else {
-            sauces.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id})
+            console.log(saucesObject);
+            sauces.updateOne({ _id: req.params.id}, { ...saucesObject, _id: req.params.id}) //TEM PROBLEMA NESSA FUCKING LINHA
               .then(() => res.status(200).json({message : 'Objet modifié!'}))
               .catch(error => res.status(401).json({ error }));
           }
@@ -77,9 +78,9 @@ exports.deleteSauces = (req, res, next) => {
               res.status(401).json({message: 'Not authorized'});
           } else {
               const filename = sauces.imageUrl.split('/images/')[1];
-              fs.unlink(`images/${filename}`, () => {
-                  sauces.deleteOne({_id: req.params.id})
-                      .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
+              fs.unlink(`images/${filename}`, () => { //delete the pic file from database
+                  sauces.deleteOne({_id: req.params.id}) //delete the record from database
+                      .then(() => { res.status(200).json({message: 'Objet supprimé !'})}) //NAO SEI COMO FAZER PRA APAGAR O OBJETO DA MEU LOCAL 
                       .catch(error => res.status(401).json({ error }));
               });
           }
@@ -88,3 +89,32 @@ exports.deleteSauces = (req, res, next) => {
           res.status(500).json({ error });
       });
 };
+//POST - Allows the user to like or dislike any sauce 
+exports.likeAndDislikes = (req, res, next) => { //nao tenho certeza se aqui nessa linha vai esse next ou nao
+  const userIdentification = req.body.userId
+  const likeStatus = req.body.likeAndDislikes
+  if (likeStatus === 1){
+    Sauces.updateOne({_id:req.params.id},{$inc:{likes:+1},
+    $push:{usersLiked:userIdentification}})
+    .then(() => res.status(201).json({message:"like registered"}))
+    .catch(error => res.status(400).json(error))}
+  if (likeStatus === 0){
+    Sauces.updateOne({ _id: req.params.id }, { $inc: { likes: -1 }, $pull: { usersLiked: userIdentifiant } })
+        .then(() => {
+            return Sauces.updateOne(
+                { _id: req.params.id },
+                { $inc: { dislikes: +1 }, $pull: { usersDisliked: userIdentifiant } }
+            );
+        })
+        .then(() => {
+            res.status(201).json({ message: ['Like canceled', 'Dislike canceled']});
+        })
+        .catch((error) => res.status(400).json(error));
+  }
+  if (likeStatus === -1){ //esse bloco nao sei se se aplica nao, pq segundo a correcao que eu achei no stakoverflow me parece q o cancelamento do dislike ta no bloco de cima
+    Sauces.updateOne({_id:req.params.id},{$inc:{dislikes:-1},
+    $push:{usersLiked:userIdentification}})
+    .then(() => res.status(201).json({message: "dislike canceled"}))
+    .catch(errror => res.status(400).json(error))
+  }
+}

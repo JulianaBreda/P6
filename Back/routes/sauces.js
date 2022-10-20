@@ -18,7 +18,7 @@ router.put('/:id', auth, multer, saucesCtrl.modifySauces);
 router.delete('/:id', auth, saucesCtrl.deleteSauces);
 
 // Allows the user to LIKE-DISLIKE the sauces
-//router.post('/:id/like', auth, saucesCtrl);
+//router.post('/:id/like', auth, saucesCtrl.likesAndDislikes);
 
 
 module.exports = router;
