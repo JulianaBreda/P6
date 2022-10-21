@@ -90,31 +90,47 @@ exports.deleteSauces = (req, res, next) => {
       });
 };
 //POST - Allows the user to like or dislike any sauce 
-exports.likeAndDislikes = (req, res, next) => { //nao tenho certeza se aqui nessa linha vai esse next ou nao
+exports.likesAndDislikes = (req, res, next) => { //nao tenho certeza se aqui nessa linha vai esse next ou nao
   const userIdentification = req.body.userId
-  const likeStatus = req.body.likeAndDislikes
+  const likeStatus = req.body.like
   if (likeStatus === 1){
-    Sauces.updateOne({_id:req.params.id},{$inc:{likes:+1},
+    sauces.updateOne({_id:req.params.id},{$inc:{likes:+1},
     $push:{usersLiked:userIdentification}})
     .then(() => res.status(201).json({message:"like registered"}))
     .catch(error => res.status(400).json(error))}
-  if (likeStatus === 0){
-    Sauces.updateOne({ _id: req.params.id }, { $inc: { likes: -1 }, $pull: { usersLiked: userIdentifiant } })
-        .then(() => {
-            return Sauces.updateOne(
-                { _id: req.params.id },
-                { $inc: { dislikes: +1 }, $pull: { usersDisliked: userIdentifiant } }
-            );
-        })
+ 
+    if (likeStatus === 0){ //undo like - line 107
+    sauces.findOne({
+      _id: req.params.id
+    })
+    .then((sauce) => {
+      const usersLikedArray  = sauce.usersLiked;
+      const usersDislikedArray = sauce.usersDisliked;
+      if(usersLikedArray.indexOf(userIdentification)!= -1){
+        sauces.updateOne({ _id: req.params.id }, { $inc: { likes: -1 }, $pull: { usersLiked: userIdentification } })
         .then(() => {
             res.status(201).json({ message: ['Like canceled', 'Dislike canceled']});
         })
         .catch((error) => res.status(400).json(error));
+      }
+      if(usersDislikedArray.indexOf(userIdentification)!= -1){
+        sauces.updateOne(    //undo dislike 
+          { _id: req.params.id },
+          { $inc: { dislikes: -1 }, $pull: { usersDisliked: userIdentification } }
+        )
+        .then(() => {
+          res.status(201).json({ message: ['Like canceled', 'Dislike canceled']});
+        })
+        .catch((error) => res.status(400).json(error));
+      }
+   })
+  .catch((error) => res.status(400).json({ error }));
   }
+  
   if (likeStatus === -1){ //esse bloco nao sei se se aplica nao, pq segundo a correcao que eu achei no stakoverflow me parece q o cancelamento do dislike ta no bloco de cima
-    Sauces.updateOne({_id:req.params.id},{$inc:{dislikes:-1},
-    $push:{usersLiked:userIdentification}})
+    sauces.updateOne({_id:req.params.id},{$inc:{dislikes:+1},
+    $push:{usersDisliked:userIdentification}})
     .then(() => res.status(201).json({message: "dislike canceled"}))
-    .catch(errror => res.status(400).json(error))
+    .catch(error => res.status(400).json(error))
   }
 }
